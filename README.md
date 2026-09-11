@@ -1,27 +1,33 @@
 # VitalStock AI — Hospital Operations Intelligence
 
-A Next.js app hosting the hospital operations ML dashboard (inventory stockout risk, bed capacity,
-medicine clustering & expiry risk, cost impact).
+A Next.js app with a landing page, admin login gate, and the full hospital operations ML dashboard
+(inventory stockout risk, bed capacity, medicine clustering & expiry risk, cost impact).
 
 **The chatbot is OFF by default.** Everything else — all 3 ML models, K-Means clustering, the ROI
 calculator, Command Center — runs entirely in the browser and costs nothing to host or run, forever,
-on Vercel's free tier. The chatbot is the one feature that needs a paid Claude API key to function,
-so it's disabled out of the box and can be switched on later with zero code changes whenever you're
-ready to use it (e.g. with Anthropic's one-time $5 free trial credit).
+on Vercel's free tier.
 
 This has already been verified locally: `npm install` and `npm run build` both succeed, and the
-production server serves the page correctly.
+production server serves all pages (`/`, `/login`, `/dashboard`, `/api/chat`) correctly.
 
-## What's in here
+## App structure
 
-- `pages/index.js` — loads the dashboard client-side only (it uses browser-only chart/canvas APIs),
-  and reads `NEXT_PUBLIC_CHAT_ENABLED` to decide whether to show the chatbot at all
-- `components/StockoutRiskDashboard.jsx` — the full dashboard; accepts a `chatEnabled` prop that
-  hides the chat button and panel completely when off
-- `pages/api/chat.js` — a serverless function that securely proxies chatbot requests to Anthropic
-  (only relevant once you turn the chatbot on)
-- Tailwind CSS is configured (`tailwind.config.js`, `postcss.config.js`) since the dashboard uses
-  Tailwind utility classes for layout
+- `pages/index.js` — **Landing page**: explains the project, links to login
+- `pages/login.js` — **Admin login**: hardcoded credentials (see below), stores a session flag
+- `pages/dashboard.js` — **The dashboard itself**: checks the session flag on load, redirects to
+  `/login` if not authenticated
+- `components/StockoutRiskDashboard.jsx` — the full dashboard (Inventory, Bed Capacity, Medicine
+  Clusters & Workbench, Cost & Impact)
+- `pages/api/chat.js` — serverless proxy for the (currently disabled) chatbot
+
+### Login credentials (hardcoded, for this demo)
+
+- Email: `abc@gmail.com`
+- Password: `Group1`
+
+Any other email/password combination is rejected with a clear error message. This is intentionally
+simple (client-side check, session stored in `sessionStorage`) — fine for a course demo, **not**
+meant to be real authentication security for production use with sensitive data.
 
 ## 1. Run it locally first (optional but recommended)
 
@@ -30,7 +36,8 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 — the full dashboard works immediately, no environment variables needed.
+Open http://localhost:3000 — you'll land on the overview page, click through to `/login`, sign in
+with the credentials above, and reach the dashboard.
 
 ## 2. Push to GitHub
 
